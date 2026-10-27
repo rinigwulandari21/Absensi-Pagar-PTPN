@@ -314,3 +314,118 @@ body {
 .leaflet-control-attribution a {
   color: #2563eb !important;
 }
+
+/* ========================================================
+   RESPONSIVE DESIGN SYSTEM (OPTIMASI TAMPILAN HP / MOBILE)
+   ======================================================== */
+
+/* Utility Visibility Classes */
+.mobile-only {
+  display: none !important;
+}
+
+.desktop-only {
+  display: block;
+}
+
+.desktop-table {
+  display: table;
+  width: 100%;
+}
+
+/* Touch-friendly scrolling for tables */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar {
+  height: 6px;
+}
+.table-responsive::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+/* Grid Layouts Responsif */
+.app-two-col-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.stats-three-col-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+/* Media Query: Tablet & Smartphone (<= 768px) */
+@media (max-width: 768px) {
+  .mobile-only {
+    display: block !important;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  .desktop-table {
+    display: none !important;
+  }
+
+  /* Cegah auto-zoom pada input di iPhone/Safari */
+  input[type="text"],
+  input[type="password"],
+  input[type="email"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  .app-two-col-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .stats-three-col-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* Padding yang nyaman di layar HP */
+  .mobile-p-sm {
+    padding: 14px 12px !important;
+  }
+
+  /* Tombol yang mudah disentuh jari (touch targets min 44px) */
+  .touch-target {
+    min-height: 44px;
+  }
+}
+
+/* Media Query: Smartphone Kecil (<= 480px) */
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+
+  .stats-three-col-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .mobile-stack-full {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .mobile-w-100 {
+    width: 100% !important;
+  }
+}
+

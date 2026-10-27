@@ -80,15 +80,18 @@ export function AuthPage({ onLoginSuccess }) {
       padding: '24px 16px',
       background: 'linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%)',
     }}>
-      <div style={{
-        width: '100%',
-        maxWidth: 460,
-        background: '#ffffff',
-        borderRadius: 20,
-        boxShadow: '0 10px 30px -5px rgba(15, 23, 42, 0.1), 0 4px 12px rgba(30, 58, 138, 0.08)',
-        border: '1px solid #e2e8f0',
-        padding: '32px 28px',
-      }}>
+      <div
+        className="mobile-card"
+        style={{
+          width: '100%',
+          maxWidth: 460,
+          background: '#ffffff',
+          borderRadius: 20,
+          boxShadow: '0 10px 30px -5px rgba(15, 23, 42, 0.1), 0 4px 12px rgba(30, 58, 138, 0.08)',
+          border: '1px solid #e2e8f0',
+          padding: '32px 28px',
+        }}
+      >
         {/* Header Logo & Brand */}
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
           <div style={{

@@ -91,7 +91,7 @@ export function AdminDashboard({ currentUser, onLogout }) {
       <header style={{
         background: '#ffffff',
         borderBottom: '1px solid #e2e8f0',
-        padding: '14px 24px',
+        padding: '10px 16px',
         position: 'sticky',
         top: 0,
         zIndex: 50,
@@ -104,31 +104,32 @@ export function AdminDashboard({ currentUser, onLogout }) {
           alignItems: 'center',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
-          gap: 12,
+          gap: 10,
         }}>
           {/* Brand & Badge Admin */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{
-              width: 42,
-              height: 42,
+              width: 38,
+              height: 38,
               borderRadius: 10,
               background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               boxShadow: '0 4px 12px rgba(30, 58, 138, 0.25)',
+              flexShrink: 0,
             }}>
-              <Building2 size={22} color="#ffffff" />
+              <Building2 size={20} color="#ffffff" />
             </div>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a' }}>
                   SIA-MAGANG PTPN IV
                 </span>
                 <span style={{
-                  fontSize: '0.7rem',
+                  fontSize: '0.68rem',
                   fontWeight: 700,
-                  padding: '2px 8px',
+                  padding: '2px 7px',
                   borderRadius: 999,
                   background: '#1e3a8a',
                   color: '#ffffff',
@@ -138,14 +139,14 @@ export function AdminDashboard({ currentUser, onLogout }) {
                   PANEL ADMIN
                 </span>
               </div>
-              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                Kantor Direksi Regional 3 Pekanbaru • Monitoring Mahasiswa & Presensi
+              <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                Regional 3 Pekanbaru • Monitoring Magang
               </div>
             </div>
           </div>
 
-          {/* Profil Admin & Logout */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {/* Profil Admin, Refresh, & Logout */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <button
               type="button"
               onClick={() => loadDataFromSupabase(true)}
@@ -153,13 +154,13 @@ export function AdminDashboard({ currentUser, onLogout }) {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 6,
-                padding: '7px 12px',
+                gap: 5,
+                padding: '6px 11px',
                 borderRadius: 8,
                 border: '1px solid #bfdbfe',
                 background: '#eff6ff',
                 color: '#1e40af',
-                fontSize: '0.8rem',
+                fontSize: '0.78rem',
                 fontWeight: 600,
                 cursor: 'pointer',
               }}
@@ -169,12 +170,12 @@ export function AdminDashboard({ currentUser, onLogout }) {
               <span>{isRefreshing ? 'Memperbarui...' : 'Segarkan Data'}</span>
             </button>
 
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#0f172a' }}>
+            <div className="desktop-only" style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '0.84rem', fontWeight: 700, color: '#0f172a' }}>
                 {currentUser.nama}
               </div>
-              <div style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: 600 }}>
-                Pembimbing / Administrator HRD
+              <div style={{ fontSize: '0.7rem', color: '#1e40af', fontWeight: 600 }}>
+                Pembimbing / HRD
               </div>
             </div>
 
@@ -184,18 +185,19 @@ export function AdminDashboard({ currentUser, onLogout }) {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 6,
-                padding: '7px 14px',
+                gap: 5,
+                padding: '6px 12px',
                 borderRadius: 8,
                 border: '1px solid #cbd5e1',
                 background: '#f8fafc',
                 color: '#dc2626',
-                fontSize: '0.82rem',
+                fontSize: '0.78rem',
                 fontWeight: 600,
                 cursor: 'pointer',
+                flexShrink: 0,
               }}
             >
-              <LogOut size={14} />
+              <LogOut size={13} />
               <span>Keluar</span>
             </button>
           </div>
@@ -203,26 +205,27 @@ export function AdminDashboard({ currentUser, onLogout }) {
       </header>
 
       {/* 2. KONTEN UTAMA ADMIN */}
-      <main style={{ maxWidth: 1100, margin: '0 auto', width: '100%', padding: '24px 20px', flex: 1 }}>
+      <main style={{ maxWidth: 1100, margin: '0 auto', width: '100%', padding: '16px 14px', flex: 1 }}>
         {/* Banner Peringatan jika RLS attendances Supabase masih aktif */}
         {attendancesRlsBlocked && (
           <div style={{
             background: '#fffbeb',
             border: '1px solid #fde68a',
             borderRadius: 12,
-            padding: '12px 16px',
-            marginBottom: 20,
+            padding: '12px 14px',
+            marginBottom: 16,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            gap: 12,
-            fontSize: '0.82rem',
+            gap: 10,
+            fontSize: '0.8rem',
             color: '#92400e',
+            flexWrap: 'wrap',
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: '1 1 240px' }}>
               <AlertTriangle size={18} color="#d97706" style={{ flexShrink: 0 }} />
               <div>
-                <strong>Tabel Presensi (attendances) di Supabase masih terkunci RLS:</strong> Jalankan perintah <code>ALTER TABLE public.attendances DISABLE ROW LEVEL SECURITY;</code> di Supabase SQL Editor agar riwayat kehadiran dapat tersimpan dan tampil di sini.
+                <strong>Tabel Presensi (attendances) di Supabase masih terkunci RLS:</strong> Jalankan perintah <code>ALTER TABLE public.attendances DISABLE ROW LEVEL SECURITY;</code> di Supabase SQL Editor.
               </div>
             </div>
             <button
@@ -249,11 +252,11 @@ export function AdminDashboard({ currentUser, onLogout }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          marginBottom: 16,
-          fontSize: '0.78rem',
+          marginBottom: 14,
+          fontSize: '0.76rem',
           color: '#64748b',
           flexWrap: 'wrap',
-          gap: 8,
+          gap: 6,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
@@ -267,12 +270,7 @@ export function AdminDashboard({ currentUser, onLogout }) {
         </div>
 
         {/* Ringkasan Statistik Cepat */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: 16,
-          marginBottom: 24,
-        }}>
+        <div className="stats-three-col-grid" style={{ marginBottom: 20 }}>
           <div style={{
             background: '#ffffff',
             border: '1px solid #e2e8f0',
@@ -343,8 +341,9 @@ export function AdminDashboard({ currentUser, onLogout }) {
             </span>
           </div>
 
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', textAlign: 'left' }}>
+          {/* TAMPILAN DESKTOP: Tabel Mahasiswa Magang */}
+          <div className="desktop-table table-responsive">
+            <table style={{ width: '100%', minWidth: 640, borderCollapse: 'collapse', fontSize: '0.85rem', textAlign: 'left' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '1.5px solid #e2e8f0', color: '#475569' }}>
                   <th style={{ padding: '10px 14px', width: '40px' }}>No</th>
@@ -441,6 +440,87 @@ export function AdminDashboard({ currentUser, onLogout }) {
               </tbody>
             </table>
           </div>
+
+          {/* TAMPILAN MOBILE: Kartu Mahasiswa Magang Responsif */}
+          <div className="mobile-only">
+            {isLoading ? (
+              <div style={{ padding: '24px', textAlign: 'center', color: '#1e40af', fontWeight: 600 }}>
+                <RefreshCw size={15} className="spin" style={{ display: 'inline-block', marginRight: 8, verticalAlign: 'middle' }} />
+                Mengambil data mahasiswa dari Supabase...
+              </div>
+            ) : interns.length === 0 ? (
+              <div style={{ padding: '20px', textAlign: 'center', color: '#94a3b8', fontSize: '0.85rem' }}>
+                Belum ada data mahasiswa magang di Supabase.
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {interns.map((intern, idx) => {
+                  const count = getInternAttendanceCount(intern.username);
+                  const isSelected = selectedInternUsername.toLowerCase() === intern.username.toLowerCase();
+                  return (
+                    <div
+                      key={intern.id}
+                      style={{
+                        background: isSelected ? '#eff6ff' : '#f8fafc',
+                        border: `1px solid ${isSelected ? '#93c5fd' : '#e2e8f0'}`,
+                        borderRadius: 12,
+                        padding: '12px 14px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 8,
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div>
+                          <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.92rem' }}>
+                            {intern.nama}
+                          </div>
+                          <div style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: 600 }}>
+                            @{intern.username} • {intern.jurusan}
+                          </div>
+                        </div>
+                        <span style={{
+                          padding: '3px 8px',
+                          borderRadius: 999,
+                          fontSize: '0.7rem',
+                          fontWeight: 700,
+                          background: '#eff6ff',
+                          color: '#1e40af',
+                          border: '1px solid #bfdbfe',
+                          whiteSpace: 'nowrap',
+                        }}>
+                          {count} Hari Hadir
+                        </span>
+                      </div>
+
+                      <div style={{ fontSize: '0.75rem', color: '#475569' }}>
+                        <div>Bagian: <strong>{intern.bagianMagang}</strong></div>
+                        <div>Mentor: <strong>{intern.namaMentor}</strong></div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setSelectedInternUsername(intern.username)}
+                        style={{
+                          width: '100%',
+                          padding: '8px',
+                          borderRadius: 8,
+                          border: isSelected ? '1px solid #1e3a8a' : '1px solid #cbd5e1',
+                          background: isSelected ? '#1e3a8a' : '#ffffff',
+                          color: isSelected ? '#ffffff' : '#1e40af',
+                          fontSize: '0.78rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {isSelected ? '✓ Sedang Dilihat di Tabel Presensi' : 'Lihat Kehadiran Mahasiswa Ini'}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* BAGIAN 2: REKAPITULASI DETAIL KEHADIRAN */}
@@ -495,13 +575,13 @@ export function AdminDashboard({ currentUser, onLogout }) {
             </button>
           </div>
 
-          {/* Filter Bar: Dropdown Mahasiswa & Pencarian */}
+          {/* Filter Bar: Dropdown Mahasiswa & Pencarian (Responsif Mobile) */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             flexWrap: 'wrap',
-            gap: 12,
+            gap: 10,
             marginBottom: 16,
             background: '#f8fafc',
             padding: '12px 14px',
@@ -509,15 +589,16 @@ export function AdminDashboard({ currentUser, onLogout }) {
             border: '1px solid #e2e8f0',
           }}>
             {/* Filter Dropdown Nama Mahasiswa */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Filter size={15} color="#1e40af" />
-              <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155' }}>
-                Filter Mahasiswa:
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: '1 1 240px' }}>
+              <Filter size={15} color="#1e40af" style={{ flexShrink: 0 }} />
+              <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', whiteSpace: 'nowrap' }}>
+                Filter:
               </label>
               <select
                 value={selectedInternUsername}
                 onChange={(e) => setSelectedInternUsername(e.target.value)}
                 style={{
+                  width: '100%',
                   padding: '6px 12px',
                   borderRadius: 6,
                   border: '1px solid #cbd5e1',
@@ -539,7 +620,7 @@ export function AdminDashboard({ currentUser, onLogout }) {
             </div>
 
             {/* Kotak Pencarian */}
-            <div style={{ position: 'relative', minWidth: 240 }}>
+            <div style={{ position: 'relative', flex: '1 1 200px' }}>
               <Search size={14} color="#64748b" style={{ position: 'absolute', top: 9, left: 10 }} />
               <input
                 type="text"
@@ -560,9 +641,9 @@ export function AdminDashboard({ currentUser, onLogout }) {
             </div>
           </div>
 
-          {/* Tabel Detail Kehadiran */}
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem', textAlign: 'left' }}>
+          {/* TAMPILAN DESKTOP: Tabel Detail Kehadiran */}
+          <div className="desktop-table table-responsive">
+            <table style={{ width: '100%', minWidth: 680, borderCollapse: 'collapse', fontSize: '0.84rem', textAlign: 'left' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '1.5px solid #e2e8f0', color: '#475569' }}>
                   <th style={{ padding: '10px 12px', width: '40px' }}>No</th>
@@ -686,6 +767,112 @@ export function AdminDashboard({ currentUser, onLogout }) {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* TAMPILAN MOBILE: List Kartu Rekapitulasi Presensi Responsif */}
+          <div className="mobile-only">
+            {isLoading ? (
+              <div style={{ padding: '24px', textAlign: 'center', color: '#1e40af', fontWeight: 600 }}>
+                <RefreshCw size={15} className="spin" style={{ display: 'inline-block', marginRight: 8, verticalAlign: 'middle' }} />
+                Mengambil catatan kehadiran dari Supabase...
+              </div>
+            ) : filteredLogs.length === 0 ? (
+              <div style={{ padding: '20px', textAlign: 'center', color: '#94a3b8', fontSize: '0.85rem' }}>
+                {allLogs.length === 0
+                  ? 'Belum ada catatan presensi di database Supabase.'
+                  : 'Tidak ditemukan catatan kehadiran untuk filter ini.'}
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {filteredLogs.map((log, index) => (
+                  <div
+                    key={log.id}
+                    style={{
+                      background: '#f8fafc',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: 12,
+                      padding: '12px 14px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 8,
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div>
+                        <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.92rem' }}>
+                          {log.internName || '-'}
+                        </div>
+                        <div style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: 600 }}>
+                          @{log.username} • {log.bagianMagang || '-'}
+                        </div>
+                      </div>
+                      <span style={{
+                        padding: '3px 8px',
+                        borderRadius: 999,
+                        fontSize: '0.7rem',
+                        fontWeight: 700,
+                        background: '#ecfdf5',
+                        color: '#065f46',
+                        border: '1px solid #a7f3d0',
+                        whiteSpace: 'nowrap',
+                      }}>
+                        ✅ Hadir
+                      </span>
+                    </div>
+
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      borderTop: '1px solid #e2e8f0',
+                      paddingTop: 8,
+                      fontSize: '0.76rem',
+                      color: '#475569',
+                      flexWrap: 'wrap',
+                      gap: 6,
+                    }}>
+                      <div>
+                        <strong>{log.tanggal}</strong>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <Clock size={13} color="#2563eb" />
+                        <span>Jam: <strong>{log.jam}</strong></span>
+                      </div>
+                    </div>
+
+                    <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                      Jarak GPS: <strong>{log.jarak}</strong> ({log.koordinat})
+                    </div>
+
+                    {log.fotoUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setViewPhotoModal(log)}
+                        style={{
+                          marginTop: 4,
+                          width: '100%',
+                          padding: '8px',
+                          borderRadius: 8,
+                          background: '#eff6ff',
+                          border: '1px solid #bfdbfe',
+                          color: '#1e40af',
+                          fontWeight: 700,
+                          fontSize: '0.8rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 6,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <Eye size={14} />
+                        <span>Lihat Bukti Foto Selfie</span>
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </main>

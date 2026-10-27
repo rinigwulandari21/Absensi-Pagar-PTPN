@@ -236,7 +236,7 @@ export function SimpleAttendanceDashboard({ currentUser, onLogout }) {
       <header style={{
         background: '#ffffff',
         borderBottom: '1px solid #e2e8f0',
-        padding: '12px 20px',
+        padding: '10px 16px',
         position: 'sticky',
         top: 0,
         zIndex: 50,
@@ -248,39 +248,39 @@ export function SimpleAttendanceDashboard({ currentUser, onLogout }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 12,
+          gap: 10,
         }}>
           {/* Logo & Info Perusahaan */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{
-              width: 38,
-              height: 38,
+              width: 36,
+              height: 36,
               borderRadius: 10,
               background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              flexShrink: 0,
             }}>
-              <Building2 size={20} color="#ffffff" />
+              <Building2 size={19} color="#ffffff" />
             </div>
             <div>
-              <div style={{ fontSize: '1rem', fontWeight: 800, color: '#0f172a', lineHeight: 1.2 }}>
+              <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0f172a', lineHeight: 1.2 }}>
                 SIA-MAGANG PTPN IV
               </div>
-              <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
-                Regional 3 Pekanbaru • Jl. Rambutan No. 43
+              <div style={{ fontSize: '0.7rem', color: '#64748b' }}>
+                Regional 3 Pekanbaru
               </div>
             </div>
           </div>
 
           {/* Info Peserta Magang & Logout */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div className="desktop-only" style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '0.84rem', fontWeight: 700, color: '#0f172a' }}>
                 {currentUser.nama}
               </div>
-              <div style={{ fontSize: '0.72rem', color: '#1e40af' }}>
+              <div style={{ fontSize: '0.7rem', color: '#1e40af' }}>
                 {currentUser.bagianMagang}
               </div>
             </div>
@@ -291,15 +291,16 @@ export function SimpleAttendanceDashboard({ currentUser, onLogout }) {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 6,
+                gap: 5,
                 padding: '6px 12px',
                 borderRadius: 8,
                 border: '1px solid #cbd5e1',
                 background: '#f8fafc',
                 color: '#dc2626',
-                fontSize: '0.8rem',
+                fontSize: '0.78rem',
                 fontWeight: 600,
                 cursor: 'pointer',
+                flexShrink: 0,
               }}
             >
               <LogOut size={14} />
@@ -310,13 +311,13 @@ export function SimpleAttendanceDashboard({ currentUser, onLogout }) {
       </header>
 
       {/* 2. KONTEN UTAMA */}
-      <main style={{ maxWidth: 960, margin: '0 auto', width: '100%', padding: '20px 16px', flex: 1 }}>
+      <main style={{ maxWidth: 960, margin: '0 auto', width: '100%', padding: '16px 14px', flex: 1 }}>
         {/* Banner Profil Singkat */}
         <div style={{
           background: '#ffffff',
           border: '1px solid #e2e8f0',
           borderRadius: 14,
-          padding: '16px 20px',
+          padding: '16px',
           marginBottom: 16,
           boxShadow: '0 2px 8px rgba(15, 23, 42, 0.04)',
           display: 'flex',
@@ -325,13 +326,13 @@ export function SimpleAttendanceDashboard({ currentUser, onLogout }) {
           flexWrap: 'wrap',
           gap: 12,
         }}>
-          <div>
-            <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 600 }}>Data Peserta Magang:</div>
-            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a' }}>{currentUser.nama}</div>
+          <div style={{ flex: '1 1 240px' }}>
+            <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>Data Peserta Magang:</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', margin: '2px 0' }}>{currentUser.nama}</div>
             <div style={{ fontSize: '0.8rem', color: '#1e40af' }}>
               Jurusan: <strong>{currentUser.jurusan}</strong> • Bagian: <strong>{currentUser.bagianMagang}</strong>
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: 2 }}>
+            <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: 2 }}>
               Mentor: {currentUser.namaMentor}
             </div>
           </div>
@@ -339,13 +340,13 @@ export function SimpleAttendanceDashboard({ currentUser, onLogout }) {
           <div style={{
             background: '#eff6ff',
             border: '1px solid #bfdbfe',
-            padding: '8px 14px',
+            padding: '8px 12px',
             borderRadius: 10,
-            textAlign: 'right',
+            flex: '0 1 auto',
           }}>
-            <div style={{ fontSize: '0.7rem', color: '#1e40af', fontWeight: 700 }}>AREA KANTOR WAJIB</div>
+            <div style={{ fontSize: '0.68rem', color: '#1e40af', fontWeight: 700 }}>AREA KANTOR WAJIB</div>
             <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f172a' }}>PTPN IV Regional 3</div>
-            <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Batas Radius: 250 Meter</div>
+            <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Batas Radius: 250 Meter</div>
           </div>
         </div>
 
@@ -370,8 +371,8 @@ export function SimpleAttendanceDashboard({ currentUser, onLogout }) {
           </div>
         )}
 
-        {/* Grid: 2 Kolom (Kamera Tampak Muka & Status Lokasi GPS Riil) */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 16, marginBottom: 24 }}>
+        {/* Grid: 2 Kolom Responsif (Kamera Tampak Muka & Status Lokasi GPS Riil) */}
+        <div className="app-two-col-grid" style={{ marginBottom: 24 }}>
           
           {/* KOTAK 1: KAMERA TAMPAK MUKA */}
           <div style={{
@@ -741,9 +742,9 @@ export function SimpleAttendanceDashboard({ currentUser, onLogout }) {
             </div>
           </div>
 
-          {/* Tabel Riwayat Kehadiran */}
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem', textAlign: 'left' }}>
+          {/* TAMPILAN DESKTOP: Tabel Riwayat Kehadiran */}
+          <div className="desktop-table table-responsive">
+            <table style={{ width: '100%', minWidth: 540, borderCollapse: 'collapse', fontSize: '0.84rem', textAlign: 'left' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '1.5px solid #e2e8f0', color: '#475569' }}>
                   <th style={{ padding: '10px 12px', width: '50px' }}>No</th>
@@ -853,6 +854,101 @@ export function SimpleAttendanceDashboard({ currentUser, onLogout }) {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* TAMPILAN MOBILE: List Kartu Presensi Responsif untuk Layar HP */}
+          <div className="mobile-only">
+            {logs.length === 0 ? (
+              <div style={{ padding: '24px', textAlign: 'center', color: '#94a3b8', fontSize: '0.85rem' }}>
+                Belum ada catatan hari masuk magang.
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {logs.map((log, index) => (
+                  <div
+                    key={log.id}
+                    style={{
+                      background: '#f8fafc',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: 12,
+                      padding: '12px 14px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 8,
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div>
+                        <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.92rem' }}>
+                          {log.tanggal}
+                        </div>
+                        <div style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: 600 }}>
+                          Hari {log.hari || 'Kerja'}
+                        </div>
+                      </div>
+                      <span style={{
+                        padding: '3px 8px',
+                        borderRadius: 999,
+                        fontSize: '0.7rem',
+                        fontWeight: 700,
+                        background: '#ecfdf5',
+                        color: '#065f46',
+                        border: '1px solid #a7f3d0',
+                        whiteSpace: 'nowrap',
+                      }}>
+                        ✅ Hadir
+                      </span>
+                    </div>
+
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      borderTop: '1px solid #e2e8f0',
+                      paddingTop: 8,
+                      fontSize: '0.76rem',
+                      color: '#475569',
+                      flexWrap: 'wrap',
+                      gap: 6,
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <Clock size={13} color="#2563eb" />
+                        <span>Jam: <strong>{log.jam}</strong></span>
+                      </div>
+                      <div style={{ color: '#64748b' }}>
+                        Jarak: <strong>{log.jarak}</strong>
+                      </div>
+                    </div>
+
+                    {log.fotoUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setViewPhotoModal(log)}
+                        style={{
+                          marginTop: 4,
+                          width: '100%',
+                          padding: '8px',
+                          borderRadius: 8,
+                          background: '#eff6ff',
+                          border: '1px solid #bfdbfe',
+                          color: '#1e40af',
+                          fontWeight: 700,
+                          fontSize: '0.8rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 6,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <Eye size={14} />
+                        <span>Lihat Bukti Foto Selfie</span>
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </main>

@@ -180,17 +180,20 @@ ON CONFLICT (username) DO NOTHING;`;
           zIndex: 9999,
           padding: '16px',
         }}>
-          <div style={{
-            background: '#ffffff',
-            borderRadius: '16px',
-            maxWidth: '650px',
-            width: '100%',
-            maxHeight: '90vh',
-            overflowY: 'auto',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)',
-            padding: '24px',
-            position: 'relative',
-          }}>
+          <div
+            className="mobile-modal"
+            style={{
+              background: '#ffffff',
+              borderRadius: '16px',
+              maxWidth: '650px',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)',
+              padding: '24px',
+              position: 'relative',
+            }}
+          >
             <button
               onClick={() => setShowModal(false)}
               style={{

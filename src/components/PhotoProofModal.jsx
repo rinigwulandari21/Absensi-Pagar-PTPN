@@ -7,7 +7,7 @@ export function PhotoProofModal({ logData, onClose }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
-        className="glass-panel"
+        className="glass-panel mobile-modal"
         style={{
           width: '100%',
           maxWidth: '680px',
