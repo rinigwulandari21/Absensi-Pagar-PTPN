@@ -3,7 +3,7 @@ import { Camera, RefreshCw, FlipHorizontal, Check, AlertTriangle, ShieldCheck, F
 import { captureWithWatermark } from '../utils/watermarkUtils';
 import { formatDistance, formatCoordinates } from '../utils/geoUtils';
 
-export function CameraAttendance({
+export function KameraAbsensi({
   internProfile,
   userLat,
   userLng,
@@ -513,3 +513,6 @@ export function CameraAttendance({
     </div>
   );
 }
+
+export { KameraAbsensi as CameraAttendance };
+export default KameraAbsensi;

@@ -9,7 +9,7 @@ import { calculateHaversineDistance, isWithinGeofence, formatDistance, formatCoo
 import { captureWithWatermark } from '../utils/watermarkUtils';
 import { getAttendanceLogs, saveAttendanceLog, getLocalLogs } from '../utils/storageUtils';
 
-export function SimpleAttendanceDashboard({ currentUser, onLogout }) {
+export function DashboardAbsensiMagang({ currentUser, onLogout }) {
   // Ambil riwayat absen khusus untuk user yang sedang login (sync initial dari local, async dari Supabase)
   const [logs, setLogs] = useState(() => getLocalLogs(currentUser.username));
   const [successModal, setSuccessModal] = useState(null);
@@ -1088,3 +1088,6 @@ export function SimpleAttendanceDashboard({ currentUser, onLogout }) {
     </div>
   );
 }
+
+export { DashboardAbsensiMagang as SimpleAttendanceDashboard };
+export default DashboardAbsensiMagang;

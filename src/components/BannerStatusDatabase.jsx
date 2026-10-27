@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Database, AlertTriangle, CheckCircle2, Copy, Check, RefreshCw, ExternalLink, X, ShieldAlert } from 'lucide-react';
 import { checkSupabaseWritePermission } from '../utils/syncUtils';
 
-export function SupabaseRlsBanner() {
+export function BannerStatusDatabase() {
   const [status, setStatus] = useState('checking'); // 'checking' | 'rls_blocked' | 'connected'
   const [showModal, setShowModal] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -350,3 +350,6 @@ ON CONFLICT (username) DO NOTHING;`;
     </>
   );
 }
+
+export { BannerStatusDatabase as SupabaseRlsBanner };
+export default BannerStatusDatabase;

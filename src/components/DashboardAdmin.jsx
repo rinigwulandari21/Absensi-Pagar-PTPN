@@ -7,7 +7,7 @@ import {
 import { getSupabaseInternsOnly } from '../utils/authUtils';
 import { getSupabaseAttendanceLogsOnly, exportAttendanceToCSV } from '../utils/storageUtils';
 
-export function AdminDashboard({ currentUser, onLogout }) {
+export function DashboardAdmin({ currentUser, onLogout }) {
   // Hanya ambil data murni dari database Supabase (bukan mock/browser)
   const [interns, setInterns] = useState([]);
   const [allLogs, setAllLogs] = useState([]);
@@ -942,3 +942,6 @@ export function AdminDashboard({ currentUser, onLogout }) {
     </div>
   );
 }
+
+export { DashboardAdmin as AdminDashboard };
+export default DashboardAdmin;

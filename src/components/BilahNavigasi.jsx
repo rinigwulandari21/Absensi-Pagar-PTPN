@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Building2, Clock, User, ShieldCheck, MapPin } from 'lucide-react';
 import { PTPN_LOCATION } from '../constants/ptpnConfig';
 
-export function Navbar({ internProfile, onOpenProfile, isWithinGeofence, distanceMeters }) {
+export function BilahNavigasi({ internProfile, onOpenProfile, isWithinGeofence, distanceMeters }) {
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
@@ -205,3 +205,6 @@ export function Navbar({ internProfile, onOpenProfile, isWithinGeofence, distanc
     </header>
   );
 }
+
+export { BilahNavigasi as Navbar };
+export default BilahNavigasi;

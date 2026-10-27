@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { User, Building, BookOpen, GraduationCap, X, Check } from 'lucide-react';
 
-export function InternProfileModal({ profile, onSave, onClose }) {
+export function ModalProfilMagang({ profile, onSave, onClose }) {
   const [formData, setFormData] = useState({ ...profile });
 
   const handleChange = (e) => {
@@ -226,3 +226,6 @@ export function InternProfileModal({ profile, onSave, onClose }) {
     </div>
   );
 }
+
+export { ModalProfilMagang as InternProfileModal };
+export default ModalProfilMagang;

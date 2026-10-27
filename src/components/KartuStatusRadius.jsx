@@ -3,7 +3,7 @@ import { MapPin, Navigation, CheckCircle2, XCircle, AlertCircle, RefreshCw, Slid
 import { PTPN_LOCATION, SIMULATION_PRESETS } from '../constants/ptpnConfig';
 import { formatDistance, formatCoordinates } from '../utils/geoUtils';
 
-export function GeofenceStatusCard({
+export function KartuStatusRadius({
   userLat,
   userLng,
   userAccuracy,
@@ -279,3 +279,6 @@ export function GeofenceStatusCard({
     </div>
   );
 }
+
+export { KartuStatusRadius as GeofenceStatusCard };
+export default KartuStatusRadius;

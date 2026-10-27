@@ -3,7 +3,7 @@ import confetti from 'canvas-confetti';
 import { CheckCircle2, ShieldCheck, MapPin, Calendar, Clock, Download, X } from 'lucide-react';
 import { PTPN_LOCATION } from '../constants/ptpnConfig';
 
-export function AttendanceSuccessModal({ logData, internProfile, onClose }) {
+export function ModalSuksesAbsen({ logData, internProfile, onClose }) {
   useEffect(() => {
     // Launch celebratory confetti in shades of blue and white
     confetti({
@@ -195,3 +195,6 @@ export function AttendanceSuccessModal({ logData, internProfile, onClose }) {
     </div>
   );
 }
+
+export { ModalSuksesAbsen as AttendanceSuccessModal };
+export default ModalSuksesAbsen;

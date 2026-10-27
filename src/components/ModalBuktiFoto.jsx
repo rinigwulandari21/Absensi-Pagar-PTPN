@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, Download, ShieldCheck, MapPin, Calendar, Clock, User } from 'lucide-react';
 
-export function PhotoProofModal({ logData, onClose }) {
+export function ModalBuktiFoto({ logData, onClose }) {
   if (!logData) return null;
 
   return (
@@ -121,3 +121,6 @@ export function PhotoProofModal({ logData, onClose }) {
     </div>
   );
 }
+
+export { ModalBuktiFoto as PhotoProofModal };
+export default ModalBuktiFoto;

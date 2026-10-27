@@ -4,7 +4,7 @@ import { Map, Layers, Target, Info } from 'lucide-react';
 import { PTPN_LOCATION } from '../constants/ptpnConfig';
 import { formatDistance } from '../utils/geoUtils';
 
-export function AttendanceMap({
+export function PetaLokasiAbsensi({
   userLat,
   userLng,
   distanceMeters,
@@ -233,3 +233,6 @@ export function AttendanceMap({
     </div>
   );
 }
+
+export { PetaLokasiAbsensi as AttendanceMap };
+export default PetaLokasiAbsensi;

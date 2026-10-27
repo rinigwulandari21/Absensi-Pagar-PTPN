@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { History, Download, Eye, CheckCircle, Calendar, Clock, MapPin, Check, Filter } from 'lucide-react';
 import { exportAttendanceToCSV } from '../utils/storageUtils';
 
-export function AttendanceHistory({ logs, onSelectPhoto }) {
+export function RiwayatAbsensi({ logs, onSelectPhoto }) {
   const [filterType, setFilterType] = useState('Semua'); // 'Semua' | 'Masuk' | 'Pulang'
 
   const filteredLogs = logs.filter(log => {
@@ -253,3 +253,6 @@ export function AttendanceHistory({ logs, onSelectPhoto }) {
     </div>
   );
 }
+
+export { RiwayatAbsensi as AttendanceHistory };
+export default RiwayatAbsensi;

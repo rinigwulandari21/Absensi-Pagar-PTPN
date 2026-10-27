@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Building2, User, Lock, BookOpen, Briefcase, UserCheck, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import { registerUser, loginUser } from '../utils/authUtils';
 
-export function AuthPage({ onLoginSuccess }) {
+export function HalamanLoginDaftar({ onLoginSuccess }) {
   // 'login' | 'register'
   const [mode, setMode] = useState('login');
   const [errorMsg, setErrorMsg] = useState('');
@@ -435,3 +435,6 @@ export function AuthPage({ onLoginSuccess }) {
     </div>
   );
 }
+
+export { HalamanLoginDaftar as AuthPage };
+export default HalamanLoginDaftar;
