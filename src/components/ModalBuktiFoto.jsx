@@ -84,7 +84,9 @@ export function ModalBuktiFoto({ logData, onClose }) {
           </div>
           <div>
             <span style={{ color: '#64748b' }}>Tipe Absensi:</span>
-            <div style={{ color: '#1e40af', fontWeight: 700 }}>{logData.tipe}</div>
+            <div style={{ color: '#1e40af', fontWeight: 700 }}>
+              {logData.tipe ? (logData.tipe.toLowerCase() === 'pulang' ? 'Pulang (Sore)' : 'Masuk (Pagi)') : 'Masuk (Pagi)'}
+            </div>
           </div>
           <div>
             <span style={{ color: '#64748b' }}>Koordinat GPS:</span>

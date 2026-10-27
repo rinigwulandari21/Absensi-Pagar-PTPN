@@ -39,10 +39,13 @@ Digunakan mahasiswa untuk melakukan presensi harian dengan kamera selfie dan det
   - **Ekspor CSV (Excel):** Mengunduh rekap kehadiran lengkap dalam format CSV/Excel.
 
 ### 👤 2. Halaman Presensi Mahasiswa Magang
-- **Tampak Muka (Kamera Selfie):** Kamera aktif otomatis dengan panduan siluet wajah oval.
-- **Deteksi GPS Otomatis:** Langsung membaca titik koordinat satelit GPS perangkat riil pengguna.
-- **Satu Kali Absen Per Hari:** Tombol *Ambil Foto & Catat Kehadiran Hari Ini*.
-- **Riwayat Hari Masuk:** Tabel rekapitulasi hari-hari masuk magang bagi mahasiswa bersangkutan.
+- **Presensi Pagi (Masuk) & Sore (Pulang):**
+  - **🌅 Absen Masuk (Pagi):** Pencatatan kedatangan di kantor PTPN IV Regional 3.
+  - **🌇 Absen Pulang (Sore):** Pencatatan kepulangan saat jam kerja magang berakhir.
+  - Dilengkapi kartu status harian interaktif dan deteksi otomatis mode aktif.
+- **Tampak Muka (Kamera Selfie):** Kamera aktif otomatis dengan panduan siluet wajah oval & watermark digital resmi (*[ABSEN MASUK (PAGI)]* / *[ABSEN PULANG (SORE)]*).
+- **Deteksi GPS Otomatis:** Membaca titik koordinat satelit GPS perangkat riil pengguna (radius batas kantor 250m).
+- **Riwayat Presensi:** Tabel rekapitulasi kehadiran dengan filter *Semua*, *Masuk*, dan *Pulang*.
 
 ---
 

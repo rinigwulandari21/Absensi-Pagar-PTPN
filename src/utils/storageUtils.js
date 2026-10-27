@@ -5,14 +5,27 @@ const ATTENDANCE_KEY = 'ptpn_intern_attendance_logs_v4';
 
 const INITIAL_DAILY_LOGS = [];
 
+export function detectAttendanceType(row) {
+  if (row.tipe) return row.tipe;
+  if (row.attendanceType) return row.attendanceType;
+  const s = (row.status_lokasi || row.status || '').toLowerCase();
+  if (s.includes('pulang') || s.includes('sore') || s.includes('keluar')) {
+    return 'Pulang';
+  }
+  return 'Masuk';
+}
+
 export function getLocalLogs(username = null) {
   try {
     const raw = localStorage.getItem(ATTENDANCE_KEY);
     let allLogs = raw ? JSON.parse(raw) : INITIAL_DAILY_LOGS;
     if (username) {
-      return allLogs.filter(l => !l.username || l.username.toLowerCase() === username.toLowerCase());
+      allLogs = allLogs.filter(l => !l.username || l.username.toLowerCase() === username.toLowerCase());
     }
-    return allLogs;
+    return allLogs.map(l => ({
+      ...l,
+      tipe: detectAttendanceType(l),
+    }));
   } catch {
     return INITIAL_DAILY_LOGS;
   }
@@ -37,21 +50,26 @@ export async function getSupabaseAttendanceLogsOnly(username = null) {
       return { success: false, data: [], error: error.message, rlsBlocked: error.code === '42501' };
     }
 
-    const mapped = (data || []).map(row => ({
-      id: row.id,
-      hari: row.hari || '-',
-      tanggal: row.tanggal ? `${row.hari ? row.hari + ', ' : ''}${row.tanggal}` : (row.hari || '-'),
-      jam: row.jam || '-',
-      status: row.status_lokasi || 'Hadir (Area PTPN IV)',
-      koordinat: `${row.latitude ? Number(row.latitude).toFixed(6) : '-'}, ${row.longitude ? Number(row.longitude).toFixed(6) : '-'}`,
-      jarak: `${Math.round(row.jarak_meter || 0)} meter`,
-      lokasiValid: true,
-      internName: row.intern_name,
-      username: row.username,
-      jurusan: row.jurusan || '-',
-      bagianMagang: row.bagian_magang || '-',
-      fotoUrl: row.foto_url,
-    }));
+    const mapped = (data || []).map(row => {
+      const tipe = detectAttendanceType(row);
+      return {
+        id: row.id,
+        tipe: tipe,
+        hari: row.hari || '-',
+        tanggal: row.tanggal ? `${row.hari ? row.hari + ', ' : ''}${row.tanggal}` : (row.hari || '-'),
+        rawTanggal: row.tanggal || null,
+        jam: row.jam || '-',
+        status: row.status_lokasi || `${tipe === 'Pulang' ? 'Pulang (Sore)' : 'Masuk (Pagi)'} • Hadir (Area PTPN IV)`,
+        koordinat: `${row.latitude ? Number(row.latitude).toFixed(6) : '-'}, ${row.longitude ? Number(row.longitude).toFixed(6) : '-'}`,
+        jarak: `${Math.round(row.jarak_meter || 0)} meter`,
+        lokasiValid: true,
+        internName: row.intern_name,
+        username: row.username,
+        jurusan: row.jurusan || '-',
+        bagianMagang: row.bagian_magang || '-',
+        fotoUrl: row.foto_url,
+      };
+    });
 
     return { success: true, data: mapped, error: null };
   } catch (err) {
@@ -78,21 +96,26 @@ export async function getAttendanceLogs(username = null) {
       return getLocalLogs(username);
     }
 
-    return data.map(row => ({
-      id: row.id,
-      hari: row.hari,
-      tanggal: row.tanggal ? `${row.hari}, ${row.tanggal}` : row.hari,
-      jam: row.jam,
-      status: row.status_lokasi || 'Hadir (Area PTPN IV)',
-      koordinat: `${row.latitude ? row.latitude.toFixed(6) : '-'}, ${row.longitude ? row.longitude.toFixed(6) : '-'}`,
-      jarak: `${Math.round(row.jarak_meter || 0)} meter`,
-      lokasiValid: true,
-      internName: row.intern_name,
-      username: row.username,
-      jurusan: row.jurusan || '-',
-      bagianMagang: row.bagian_magang || '-',
-      fotoUrl: row.foto_url,
-    }));
+    return data.map(row => {
+      const tipe = detectAttendanceType(row);
+      return {
+        id: row.id,
+        tipe: tipe,
+        hari: row.hari,
+        tanggal: row.tanggal ? `${row.hari}, ${row.tanggal}` : row.hari,
+        rawTanggal: row.tanggal || null,
+        jam: row.jam,
+        status: row.status_lokasi || `${tipe === 'Pulang' ? 'Pulang (Sore)' : 'Masuk (Pagi)'} • Hadir (Area PTPN IV)`,
+        koordinat: `${row.latitude ? row.latitude.toFixed(6) : '-'}, ${row.longitude ? row.longitude.toFixed(6) : '-'}`,
+        jarak: `${Math.round(row.jarak_meter || 0)} meter`,
+        lokasiValid: true,
+        internName: row.intern_name,
+        username: row.username,
+        jurusan: row.jurusan || '-',
+        bagianMagang: row.bagian_magang || '-',
+        fotoUrl: row.foto_url,
+      };
+    });
   } catch (err) {
     console.warn('Gagal ambil data presensi dari Supabase, gunakan cache lokal:', err);
     return getLocalLogs(username);
@@ -101,11 +124,22 @@ export async function getAttendanceLogs(username = null) {
 
 // Simpan presensi baru ke Supabase
 export async function saveAttendanceLog(newEntry) {
+  const tipe = newEntry.tipe === 'Pulang' ? 'Pulang' : 'Masuk';
+  const statusLokasi = newEntry.status || `${tipe === 'Pulang' ? 'Pulang (Sore)' : 'Masuk (Pagi)'} • Hadir (Area PTPN IV)`;
+  const rawTanggal = newEntry.rawTanggal || new Date().toISOString().slice(0, 10);
+
+  const entryWithTipe = {
+    ...newEntry,
+    tipe: tipe,
+    status: statusLokasi,
+    rawTanggal: rawTanggal,
+  };
+
   // Simpan ke cache lokal terlebih dahulu
   try {
     const raw = localStorage.getItem(ATTENDANCE_KEY);
     const current = raw ? JSON.parse(raw) : INITIAL_DAILY_LOGS;
-    localStorage.setItem(ATTENDANCE_KEY, JSON.stringify([newEntry, ...current]));
+    localStorage.setItem(ATTENDANCE_KEY, JSON.stringify([entryWithTipe, ...current]));
   } catch (e) {
     console.warn('Local cache error:', e);
   }
@@ -118,12 +152,12 @@ export async function saveAttendanceLog(newEntry) {
       username: newEntry.username.toLowerCase(),
       intern_name: newEntry.internName,
       hari: newEntry.hari,
-      tanggal: new Date().toISOString().slice(0, 10),
+      tanggal: rawTanggal,
       jam: newEntry.jam,
       latitude: lat,
       longitude: lng,
       jarak_meter: parseFloat(newEntry.jarak) || 0,
-      status_lokasi: newEntry.status || 'Hadir (Area PTPN IV)',
+      status_lokasi: statusLokasi,
       foto_url: newEntry.fotoUrl || null,
     };
 
@@ -148,7 +182,20 @@ export async function saveAttendanceLog(newEntry) {
 export function exportAttendanceToCSV(logs) {
   if (!logs || !logs.length) return;
 
-  const headers = ['No', 'Nama Mahasiswa', 'Username', 'Jurusan', 'Bagian Magang', 'Hari & Tanggal', 'Jam Hadir', 'Status Lokasi', 'Jarak GPS', 'Koordinat'];
+  const headers = [
+    'No',
+    'Nama Mahasiswa',
+    'Username',
+    'Jurusan',
+    'Bagian Magang',
+    'Hari & Tanggal',
+    'Tipe Presensi',
+    'Jam Presensi',
+    'Status Lokasi',
+    'Jarak GPS',
+    'Koordinat'
+  ];
+
   const rows = logs.map((l, idx) => [
     `"${idx + 1}"`,
     `"${l.internName || '-'}"`,
@@ -156,6 +203,7 @@ export function exportAttendanceToCSV(logs) {
     `"${l.jurusan || '-'}"`,
     `"${l.bagianMagang || '-'}"`,
     `"${l.tanggal || l.hari || '-'}"`,
+    `"${l.tipe === 'Pulang' ? 'Pulang (Sore)' : 'Masuk (Pagi)'}"`,
     `"${l.jam || '-'}"`,
     `"${l.status || '-'}"`,
     `"${l.jarak || '-'}"`,

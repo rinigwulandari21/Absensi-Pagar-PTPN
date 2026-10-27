@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Building2, Users, Calendar, Clock, MapPin, Eye, Download, LogOut,
   Search, Filter, CheckCircle2, UserCheck, Shield, X, Briefcase, GraduationCap,
-  RefreshCw, Database, AlertTriangle
+  RefreshCw, Database, AlertTriangle, Sunrise, Sunset, Sun
 } from 'lucide-react';
 import { getSupabaseInternsOnly } from '../utils/authUtils';
 import { getSupabaseAttendanceLogsOnly, exportAttendanceToCSV } from '../utils/storageUtils';
@@ -14,6 +14,12 @@ export function DashboardAdmin({ currentUser, onLogout }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [attendancesRlsBlocked, setAttendancesRlsBlocked] = useState(false);
+
+  // Filter state
+  const [selectedInternUsername, setSelectedInternUsername] = useState('all');
+  const [selectedType, setSelectedType] = useState('all'); // 'all' | 'Masuk' | 'Pulang'
+  const [searchQuery, setSearchQuery] = useState('');
+  const [viewPhotoModal, setViewPhotoModal] = useState(null);
 
   // Muat data langsung murni dari database Supabase
   const loadDataFromSupabase = async (isManualRefresh = false) => {
@@ -59,31 +65,37 @@ export function DashboardAdmin({ currentUser, onLogout }) {
     loadDataFromSupabase();
   }, []);
 
-  // Filter state
-  const [selectedInternUsername, setSelectedInternUsername] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [viewPhotoModal, setViewPhotoModal] = useState(null);
-
-  // Filter logs berdasarkan mahasiswa magang yang dipilih dan pencarian nama/tanggal
+  // Filter logs berdasarkan mahasiswa magang yang dipilih, tipe presensi, dan kata kunci
   const filteredLogs = allLogs.filter((log) => {
     const matchIntern =
       selectedInternUsername === 'all' ||
       (log.username && log.username.toLowerCase() === selectedInternUsername.toLowerCase());
+
+    const matchType =
+      selectedType === 'all' ||
+      (log.tipe && log.tipe.toLowerCase() === selectedType.toLowerCase());
 
     const query = searchQuery.toLowerCase();
     const matchSearch =
       !query ||
       (log.internName && log.internName.toLowerCase().includes(query)) ||
       (log.tanggal && log.tanggal.toLowerCase().includes(query)) ||
-      (log.bagianMagang && log.bagianMagang.toLowerCase().includes(query));
+      (log.bagianMagang && log.bagianMagang.toLowerCase().includes(query)) ||
+      (log.tipe && log.tipe.toLowerCase().includes(query));
 
-    return matchIntern && matchSearch;
+    return matchIntern && matchType && matchSearch;
   });
 
   // Hitung statistik per anak magang
-  const getInternAttendanceCount = (username) => {
-    return allLogs.filter(l => l.username && l.username.toLowerCase() === username.toLowerCase()).length;
+  const getInternAttendanceStats = (username) => {
+    const internLogs = allLogs.filter(l => l.username && l.username.toLowerCase() === username.toLowerCase());
+    const masuk = internLogs.filter(l => (l.tipe || '').toLowerCase() === 'masuk').length;
+    const pulang = internLogs.filter(l => (l.tipe || '').toLowerCase() === 'pulang').length;
+    return { total: internLogs.length, masuk, pulang };
   };
+
+  const totalMasukAll = allLogs.filter(l => (l.tipe || '').toLowerCase() === 'masuk').length;
+  const totalPulangAll = allLogs.filter(l => (l.tipe || '').toLowerCase() === 'pulang').length;
 
   return (
     <div style={{ minHeight: '100vh', background: '#f8fafc', display: 'flex', flexDirection: 'column' }}>
@@ -269,53 +281,78 @@ export function DashboardAdmin({ currentUser, onLogout }) {
           )}
         </div>
 
-        {/* Ringkasan Statistik Cepat */}
-        <div className="stats-three-col-grid" style={{ marginBottom: 20 }}>
+        {/* Ringkasan Statistik 4 Kolom: Mahasiswa, Masuk Pagi, Pulang Sore, Geofence */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+          gap: 12,
+          marginBottom: 20,
+        }}>
+          {/* Card 1: Total Mahasiswa */}
           <div style={{
             background: '#ffffff',
             border: '1px solid #e2e8f0',
             borderRadius: 14,
-            padding: '18px',
+            padding: '16px',
             boxShadow: '0 2px 8px rgba(15, 23, 42, 0.04)',
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#64748b', fontSize: '0.78rem', marginBottom: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#64748b', fontSize: '0.76rem', marginBottom: 6 }}>
               <Users size={16} color="#1e40af" />
               <span>Total Mahasiswa Magang</span>
             </div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#0f172a' }}>
-              {interns.length} <span style={{ fontSize: '0.85rem', fontWeight: 500, color: '#64748b' }}>Orang</span>
+            <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#0f172a' }}>
+              {interns.length} <span style={{ fontSize: '0.8rem', fontWeight: 500, color: '#64748b' }}>Orang</span>
             </div>
           </div>
 
+          {/* Card 2: Presensi Masuk (Pagi) */}
           <div style={{
             background: '#ffffff',
             border: '1px solid #e2e8f0',
             borderRadius: 14,
-            padding: '18px',
+            padding: '16px',
             boxShadow: '0 2px 8px rgba(15, 23, 42, 0.04)',
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#64748b', fontSize: '0.78rem', marginBottom: 6 }}>
-              <Calendar size={16} color="#2563eb" />
-              <span>Total Catatan Hadir Masuk</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#1e40af', fontSize: '0.76rem', marginBottom: 6 }}>
+              <Sunrise size={16} color="#2563eb" />
+              <span>Absen Masuk (Pagi)</span>
             </div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#1e3a8a' }}>
-              {allLogs.length} <span style={{ fontSize: '0.85rem', fontWeight: 500, color: '#64748b' }}>Hari Kehadiran</span>
+            <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#1e3a8a' }}>
+              {totalMasukAll} <span style={{ fontSize: '0.8rem', fontWeight: 500, color: '#64748b' }}>Log</span>
             </div>
           </div>
 
+          {/* Card 3: Presensi Pulang (Sore) */}
           <div style={{
             background: '#ffffff',
             border: '1px solid #e2e8f0',
             borderRadius: 14,
-            padding: '18px',
+            padding: '16px',
             boxShadow: '0 2px 8px rgba(15, 23, 42, 0.04)',
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#64748b', fontSize: '0.78rem', marginBottom: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#b45309', fontSize: '0.76rem', marginBottom: 6 }}>
+              <Sunset size={16} color="#d97706" />
+              <span>Absen Pulang (Sore)</span>
+            </div>
+            <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#d97706' }}>
+              {totalPulangAll} <span style={{ fontSize: '0.8rem', fontWeight: 500, color: '#64748b' }}>Log</span>
+            </div>
+          </div>
+
+          {/* Card 4: Geofence Kantor */}
+          <div style={{
+            background: '#ffffff',
+            border: '1px solid #e2e8f0',
+            borderRadius: 14,
+            padding: '16px',
+            boxShadow: '0 2px 8px rgba(15, 23, 42, 0.04)',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#047857', fontSize: '0.76rem', marginBottom: 6 }}>
               <MapPin size={16} color="#059669" />
               <span>Validitas Area Kantor</span>
             </div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#059669' }}>
-              100% <span style={{ fontSize: '0.85rem', fontWeight: 500, color: '#64748b' }}>PTPN IV Reg 3</span>
+            <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#059669' }}>
+              100% <span style={{ fontSize: '0.8rem', fontWeight: 500, color: '#64748b' }}>PTPN IV Reg 3</span>
             </div>
           </div>
         </div>
@@ -351,7 +388,7 @@ export function DashboardAdmin({ currentUser, onLogout }) {
                   <th style={{ padding: '10px 14px' }}>Jurusan</th>
                   <th style={{ padding: '10px 14px' }}>Bagian Magang</th>
                   <th style={{ padding: '10px 14px' }}>Mentor Lapangan</th>
-                  <th style={{ padding: '10px 14px', textAlign: 'center' }}>Total Masuk</th>
+                  <th style={{ padding: '10px 14px', textAlign: 'center' }}>Rincian Presensi</th>
                   <th style={{ padding: '10px 14px', textAlign: 'center' }}>Aksi</th>
                 </tr>
               </thead>
@@ -371,7 +408,7 @@ export function DashboardAdmin({ currentUser, onLogout }) {
                   </tr>
                 ) : (
                   interns.map((intern, idx) => {
-                    const count = getInternAttendanceCount(intern.username);
+                    const stats = getInternAttendanceStats(intern.username);
                     const isSelected = selectedInternUsername.toLowerCase() === intern.username.toLowerCase();
                     return (
                       <tr
@@ -406,13 +443,18 @@ export function DashboardAdmin({ currentUser, onLogout }) {
                           <span style={{
                             padding: '4px 10px',
                             borderRadius: 999,
-                            fontSize: '0.75rem',
+                            fontSize: '0.74rem',
                             fontWeight: 700,
                             background: '#eff6ff',
                             color: '#1e40af',
                             border: '1px solid #bfdbfe',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 4,
                           }}>
-                            {count} Hari Hadir
+                            <span>{stats.masuk} Masuk</span>
+                            <span>•</span>
+                            <span>{stats.pulang} Pulang</span>
                           </span>
                         </td>
                         <td style={{ padding: '12px 14px', textAlign: 'center' }}>
@@ -454,8 +496,8 @@ export function DashboardAdmin({ currentUser, onLogout }) {
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {interns.map((intern, idx) => {
-                  const count = getInternAttendanceCount(intern.username);
+                {interns.map((intern) => {
+                  const stats = getInternAttendanceStats(intern.username);
                   const isSelected = selectedInternUsername.toLowerCase() === intern.username.toLowerCase();
                   return (
                     <div
@@ -489,7 +531,7 @@ export function DashboardAdmin({ currentUser, onLogout }) {
                           border: '1px solid #bfdbfe',
                           whiteSpace: 'nowrap',
                         }}>
-                          {count} Hari Hadir
+                          {stats.masuk} Masuk • {stats.pulang} Pulang
                         </span>
                       </div>
 
@@ -523,7 +565,7 @@ export function DashboardAdmin({ currentUser, onLogout }) {
           </div>
         </div>
 
-        {/* BAGIAN 2: REKAPITULASI DETAIL KEHADIRAN */}
+        {/* BAGIAN 2: REKAPITULASI DETAIL KEHADIRAN (PAGI & SORE) */}
         <div style={{
           background: '#ffffff',
           border: '1px solid #e2e8f0',
@@ -544,10 +586,10 @@ export function DashboardAdmin({ currentUser, onLogout }) {
           }}>
             <div>
               <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                Rekapitulasi Kehadiran Mahasiswa
+                Rekapitulasi Kehadiran Mahasiswa (Pagi & Sore)
               </h2>
               <p style={{ fontSize: '0.78rem', color: '#64748b', margin: 0 }}>
-                Pantau hari masuk, jam hadir, koordinat GPS, dan bukti foto selfie
+                Pantau hari masuk, absen pagi/sore, koordinat GPS, dan bukti foto selfie ber-watermark
               </p>
             </div>
 
@@ -575,7 +617,7 @@ export function DashboardAdmin({ currentUser, onLogout }) {
             </button>
           </div>
 
-          {/* Filter Bar: Dropdown Mahasiswa & Pencarian (Responsif Mobile) */}
+          {/* Filter Bar: Dropdown Mahasiswa, Tipe Presensi, & Pencarian */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -589,10 +631,10 @@ export function DashboardAdmin({ currentUser, onLogout }) {
             border: '1px solid #e2e8f0',
           }}>
             {/* Filter Dropdown Nama Mahasiswa */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: '1 1 240px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: '1 1 200px' }}>
               <Filter size={15} color="#1e40af" style={{ flexShrink: 0 }} />
               <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', whiteSpace: 'nowrap' }}>
-                Filter:
+                Mahasiswa:
               </label>
               <select
                 value={selectedInternUsername}
@@ -610,17 +652,92 @@ export function DashboardAdmin({ currentUser, onLogout }) {
                   outline: 'none',
                 }}
               >
-                <option value="all">Semua Mahasiswa Magang ({allLogs.length} Log)</option>
-                {interns.map((i) => (
-                  <option key={i.id} value={i.username}>
-                    {i.nama} ({getInternAttendanceCount(i.username)} Hari)
-                  </option>
-                ))}
+                <option value="all">Semua Mahasiswa ({allLogs.length} Log)</option>
+                {interns.map((i) => {
+                  const s = getInternAttendanceStats(i.username);
+                  return (
+                    <option key={i.id} value={i.username}>
+                      {i.nama} ({s.masuk} Masuk, {s.pulang} Pulang)
+                    </option>
+                  );
+                })}
               </select>
             </div>
 
+            {/* Filter Tipe Presensi: Semua / Masuk / Pulang */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: '0 1 auto' }}>
+              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', whiteSpace: 'nowrap' }}>
+                Tipe:
+              </span>
+              <div style={{
+                display: 'inline-flex',
+                background: '#ffffff',
+                padding: '2px',
+                borderRadius: 6,
+                border: '1px solid #cbd5e1',
+                gap: 2,
+              }}>
+                <button
+                  type="button"
+                  onClick={() => setSelectedType('all')}
+                  style={{
+                    padding: '4px 10px',
+                    borderRadius: 5,
+                    border: 'none',
+                    fontSize: '0.74rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    background: selectedType === 'all' ? '#1e3a8a' : 'transparent',
+                    color: selectedType === 'all' ? '#ffffff' : '#64748b',
+                  }}
+                >
+                  Semua
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedType('Masuk')}
+                  style={{
+                    padding: '4px 10px',
+                    borderRadius: 5,
+                    border: 'none',
+                    fontSize: '0.74rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    background: selectedType === 'Masuk' ? '#1e3a8a' : 'transparent',
+                    color: selectedType === 'Masuk' ? '#ffffff' : '#64748b',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 3,
+                  }}
+                >
+                  <Sunrise size={12} />
+                  <span>Masuk ({totalMasukAll})</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedType('Pulang')}
+                  style={{
+                    padding: '4px 10px',
+                    borderRadius: 5,
+                    border: 'none',
+                    fontSize: '0.74rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    background: selectedType === 'Pulang' ? '#d97706' : 'transparent',
+                    color: selectedType === 'Pulang' ? '#ffffff' : '#64748b',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 3,
+                  }}
+                >
+                  <Sunset size={12} />
+                  <span>Pulang ({totalPulangAll})</span>
+                </button>
+              </div>
+            </div>
+
             {/* Kotak Pencarian */}
-            <div style={{ position: 'relative', flex: '1 1 200px' }}>
+            <div style={{ position: 'relative', flex: '1 1 180px' }}>
               <Search size={14} color="#64748b" style={{ position: 'absolute', top: 9, left: 10 }} />
               <input
                 type="text"
@@ -643,14 +760,15 @@ export function DashboardAdmin({ currentUser, onLogout }) {
 
           {/* TAMPILAN DESKTOP: Tabel Detail Kehadiran */}
           <div className="desktop-table table-responsive">
-            <table style={{ width: '100%', minWidth: 680, borderCollapse: 'collapse', fontSize: '0.84rem', textAlign: 'left' }}>
+            <table style={{ width: '100%', minWidth: 700, borderCollapse: 'collapse', fontSize: '0.84rem', textAlign: 'left' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '1.5px solid #e2e8f0', color: '#475569' }}>
                   <th style={{ padding: '10px 12px', width: '40px' }}>No</th>
                   <th style={{ padding: '10px 12px' }}>Nama Mahasiswa</th>
                   <th style={{ padding: '10px 12px' }}>Bagian Magang</th>
-                  <th style={{ padding: '10px 12px' }}>Hari & Tanggal Masuk</th>
-                  <th style={{ padding: '10px 12px' }}>Jam Hadir</th>
+                  <th style={{ padding: '10px 12px' }}>Hari & Tanggal</th>
+                  <th style={{ padding: '10px 12px' }}>Tipe Presensi</th>
+                  <th style={{ padding: '10px 12px' }}>Jam Presensi</th>
                   <th style={{ padding: '10px 12px' }}>Status Lokasi</th>
                   <th style={{ padding: '10px 12px' }}>Jarak GPS</th>
                   <th style={{ padding: '10px 12px', textAlign: 'center' }}>Bukti Foto</th>
@@ -659,14 +777,14 @@ export function DashboardAdmin({ currentUser, onLogout }) {
               <tbody>
                 {isLoading ? (
                   <tr>
-                    <td colSpan={8} style={{ padding: '30px', textAlign: 'center', color: '#1e40af', fontWeight: 600 }}>
+                    <td colSpan={9} style={{ padding: '30px', textAlign: 'center', color: '#1e40af', fontWeight: 600 }}>
                       <RefreshCw size={15} className="spin" style={{ display: 'inline-block', marginRight: 8, verticalAlign: 'middle' }} />
                       Mengambil catatan kehadiran dari Supabase...
                     </td>
                   </tr>
                 ) : filteredLogs.length === 0 ? (
                   <tr>
-                    <td colSpan={8} style={{ padding: '28px', textAlign: 'center', color: '#94a3b8' }}>
+                    <td colSpan={9} style={{ padding: '28px', textAlign: 'center', color: '#94a3b8' }}>
                       {allLogs.length === 0 ? (
                         <div>
                           <div style={{ fontWeight: 600, color: '#475569', marginBottom: 4 }}>
@@ -682,88 +800,111 @@ export function DashboardAdmin({ currentUser, onLogout }) {
                     </td>
                   </tr>
                 ) : (
-                  filteredLogs.map((log, index) => (
-                    <tr
-                      key={log.id}
-                      style={{ borderBottom: '1px solid #f1f5f9', transition: 'background 0.2s' }}
-                      onMouseOver={(e) => e.currentTarget.style.background = '#f8fafc'}
-                      onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <td style={{ padding: '12px', color: '#64748b', fontWeight: 600 }}>
-                        {index + 1}
-                      </td>
-                      <td style={{ padding: '12px' }}>
-                        <div style={{ fontWeight: 700, color: '#0f172a' }}>
-                          {log.internName || '-'}
-                        </div>
-                        <div style={{ fontSize: '0.72rem', color: '#1e40af' }}>
-                          @{log.username}
-                        </div>
-                      </td>
-                      <td style={{ padding: '12px', color: '#334155' }}>
-                        {log.bagianMagang || '-'}
-                      </td>
-                      <td style={{ padding: '12px' }}>
-                        <div style={{ fontWeight: 600, color: '#0f172a' }}>
-                          {log.tanggal}
-                        </div>
-                        <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
-                          Hari {log.hari || 'Kerja'}
-                        </div>
-                      </td>
-                      <td style={{ padding: '12px' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 600, color: '#0f172a' }}>
-                          <Clock size={13} color="#2563eb" />
-                          <span>{log.jam}</span>
-                        </span>
-                      </td>
-                      <td style={{ padding: '12px' }}>
-                        <span style={{
-                          padding: '3px 8px',
-                          borderRadius: 999,
-                          fontSize: '0.72rem',
-                          fontWeight: 700,
-                          background: '#ecfdf5',
-                          color: '#065f46',
-                          border: '1px solid #a7f3d0',
-                        }}>
-                          ✅ Hadir
-                        </span>
-                      </td>
-                      <td style={{ padding: '12px', color: '#64748b' }}>
-                        <div>{log.jarak}</div>
-                        <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontFamily: 'monospace' }}>
-                          {log.koordinat}
-                        </div>
-                      </td>
-                      <td style={{ padding: '12px', textAlign: 'center' }}>
-                        {log.fotoUrl ? (
-                          <button
-                            type="button"
-                            onClick={() => setViewPhotoModal(log)}
-                            style={{
-                              background: '#eff6ff',
-                              border: '1px solid #bfdbfe',
-                              borderRadius: 6,
-                              padding: '5px 10px',
-                              color: '#1e40af',
-                              fontSize: '0.75rem',
-                              fontWeight: 600,
-                              cursor: 'pointer',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: 4,
-                            }}
-                          >
-                            <Eye size={12} />
-                            <span>Lihat</span>
-                          </button>
-                        ) : (
-                          <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Tercatat</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))
+                  filteredLogs.map((log, index) => {
+                    const isPulang = (log.tipe || '').toLowerCase() === 'pulang';
+                    return (
+                      <tr
+                        key={log.id}
+                        style={{ borderBottom: '1px solid #f1f5f9', transition: 'background 0.2s' }}
+                        onMouseOver={(e) => e.currentTarget.style.background = '#f8fafc'}
+                        onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+                      >
+                        <td style={{ padding: '12px', color: '#64748b', fontWeight: 600 }}>
+                          {index + 1}
+                        </td>
+                        <td style={{ padding: '12px' }}>
+                          <div style={{ fontWeight: 700, color: '#0f172a' }}>
+                            {log.internName || '-'}
+                          </div>
+                          <div style={{ fontSize: '0.72rem', color: '#1e40af' }}>
+                            @{log.username}
+                          </div>
+                        </td>
+                        <td style={{ padding: '12px', color: '#334155' }}>
+                          {log.bagianMagang || '-'}
+                        </td>
+                        <td style={{ padding: '12px' }}>
+                          <div style={{ fontWeight: 600, color: '#0f172a' }}>
+                            {log.tanggal}
+                          </div>
+                          <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                            Hari {log.hari || 'Kerja'}
+                          </div>
+                        </td>
+
+                        {/* Tipe Presensi (Masuk vs Pulang) */}
+                        <td style={{ padding: '12px' }}>
+                          <span style={{
+                            padding: '4px 9px',
+                            borderRadius: 999,
+                            fontSize: '0.74rem',
+                            fontWeight: 800,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 4,
+                            background: isPulang ? '#fef3c7' : '#eff6ff',
+                            color: isPulang ? '#92400e' : '#1e40af',
+                            border: `1px solid ${isPulang ? '#fde68a' : '#bfdbfe'}`,
+                          }}>
+                            {isPulang ? <Sunset size={12} /> : <Sunrise size={12} />}
+                            <span>{isPulang ? 'Pulang (Sore)' : 'Masuk (Pagi)'}</span>
+                          </span>
+                        </td>
+
+                        <td style={{ padding: '12px' }}>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 600, color: '#0f172a' }}>
+                            <Clock size={13} color={isPulang ? '#d97706' : '#2563eb'} />
+                            <span>{log.jam}</span>
+                          </span>
+                        </td>
+                        <td style={{ padding: '12px' }}>
+                          <span style={{
+                            padding: '3px 8px',
+                            borderRadius: 999,
+                            fontSize: '0.72rem',
+                            fontWeight: 700,
+                            background: '#ecfdf5',
+                            color: '#065f46',
+                            border: '1px solid #a7f3d0',
+                          }}>
+                            ✅ Hadir PTPN IV
+                          </span>
+                        </td>
+                        <td style={{ padding: '12px', color: '#64748b' }}>
+                          <div>{log.jarak}</div>
+                          <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontFamily: 'monospace' }}>
+                            {log.koordinat}
+                          </div>
+                        </td>
+                        <td style={{ padding: '12px', textAlign: 'center' }}>
+                          {log.fotoUrl ? (
+                            <button
+                              type="button"
+                              onClick={() => setViewPhotoModal(log)}
+                              style={{
+                                background: '#eff6ff',
+                                border: '1px solid #bfdbfe',
+                                borderRadius: 6,
+                                padding: '5px 10px',
+                                color: '#1e40af',
+                                fontSize: '0.75rem',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 4,
+                              }}
+                            >
+                              <Eye size={12} />
+                              <span>Lihat</span>
+                            </button>
+                          ) : (
+                            <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Tercatat</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
@@ -784,100 +925,109 @@ export function DashboardAdmin({ currentUser, onLogout }) {
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {filteredLogs.map((log, index) => (
-                  <div
-                    key={log.id}
-                    style={{
-                      background: '#f8fafc',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: 12,
-                      padding: '12px 14px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 8,
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <div>
-                        <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.92rem' }}>
-                          {log.internName || '-'}
+                {filteredLogs.map((log) => {
+                  const isPulang = (log.tipe || '').toLowerCase() === 'pulang';
+                  return (
+                    <div
+                      key={log.id}
+                      style={{
+                        background: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: 12,
+                        padding: '12px 14px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 8,
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div>
+                          <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.92rem' }}>
+                            {log.internName || '-'}
+                          </div>
+                          <div style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: 600 }}>
+                            @{log.username} • {log.bagianMagang || '-'}
+                          </div>
                         </div>
-                        <div style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: 600 }}>
-                          @{log.username} • {log.bagianMagang || '-'}
-                        </div>
-                      </div>
-                      <span style={{
-                        padding: '3px 8px',
-                        borderRadius: 999,
-                        fontSize: '0.7rem',
-                        fontWeight: 700,
-                        background: '#ecfdf5',
-                        color: '#065f46',
-                        border: '1px solid #a7f3d0',
-                        whiteSpace: 'nowrap',
-                      }}>
-                        ✅ Hadir
-                      </span>
-                    </div>
 
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      borderTop: '1px solid #e2e8f0',
-                      paddingTop: 8,
-                      fontSize: '0.76rem',
-                      color: '#475569',
-                      flexWrap: 'wrap',
-                      gap: 6,
-                    }}>
-                      <div>
-                        <strong>{log.tanggal}</strong>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <Clock size={13} color="#2563eb" />
-                        <span>Jam: <strong>{log.jam}</strong></span>
-                      </div>
-                    </div>
-
-                    <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
-                      Jarak GPS: <strong>{log.jarak}</strong> ({log.koordinat})
-                    </div>
-
-                    {log.fotoUrl && (
-                      <button
-                        type="button"
-                        onClick={() => setViewPhotoModal(log)}
-                        style={{
-                          marginTop: 4,
-                          width: '100%',
-                          padding: '8px',
-                          borderRadius: 8,
-                          background: '#eff6ff',
-                          border: '1px solid #bfdbfe',
-                          color: '#1e40af',
-                          fontWeight: 700,
-                          fontSize: '0.8rem',
-                          display: 'flex',
+                        {/* Badge Tipe */}
+                        <span style={{
+                          padding: '3px 8px',
+                          borderRadius: 999,
+                          fontSize: '0.7rem',
+                          fontWeight: 800,
+                          display: 'inline-flex',
                           alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: 6,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        <Eye size={14} />
-                        <span>Lihat Bukti Foto Selfie</span>
-                      </button>
-                    )}
-                  </div>
-                ))}
+                          gap: 4,
+                          background: isPulang ? '#fef3c7' : '#eff6ff',
+                          color: isPulang ? '#92400e' : '#1e40af',
+                          border: `1px solid ${isPulang ? '#fde68a' : '#bfdbfe'}`,
+                          whiteSpace: 'nowrap',
+                        }}>
+                          {isPulang ? <Sunset size={11} /> : <Sunrise size={11} />}
+                          <span>{isPulang ? 'Pulang' : 'Masuk'}</span>
+                        </span>
+                      </div>
+
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        borderTop: '1px solid #e2e8f0',
+                        paddingTop: 8,
+                        fontSize: '0.76rem',
+                        color: '#475569',
+                        flexWrap: 'wrap',
+                        gap: 6,
+                      }}>
+                        <div>
+                          <strong>{log.tanggal}</strong>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <Clock size={13} color={isPulang ? '#d97706' : '#2563eb'} />
+                          <span>Pukul: <strong>{log.jam}</strong></span>
+                        </div>
+                      </div>
+
+                      <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                        Jarak GPS: <strong>{log.jarak}</strong> ({log.koordinat})
+                      </div>
+
+                      {log.fotoUrl && (
+                        <button
+                          type="button"
+                          onClick={() => setViewPhotoModal(log)}
+                          style={{
+                            marginTop: 4,
+                            width: '100%',
+                            padding: '8px',
+                            borderRadius: 8,
+                            background: '#eff6ff',
+                            border: '1px solid #bfdbfe',
+                            color: '#1e40af',
+                            fontWeight: 700,
+                            fontSize: '0.8rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 6,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <Eye size={14} />
+                          <span>Lihat Bukti Foto Selfie Ber-Watermark</span>
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
         </div>
       </main>
 
-      {/* MODAL LIHAT FOTO SELFIE WATERMARK OLEH ADMIN */}
+      {/* MODAL LIHAT FOTO SELFIE WATERMARK */}
       {viewPhotoModal && (
         <div
           style={{
@@ -908,11 +1058,11 @@ export function DashboardAdmin({ currentUser, onLogout }) {
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
               <div>
-                <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '1rem' }}>
-                  Bukti Presensi: {viewPhotoModal.internName}
+                <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '1.05rem' }}>
+                  Bukti Foto: {viewPhotoModal.tipe === 'Pulang' ? 'Absen Pulang (Sore)' : 'Absen Masuk (Pagi)'}
                 </div>
-                <div style={{ fontSize: '0.75rem', color: '#1e40af' }}>
-                  {viewPhotoModal.tanggal} • {viewPhotoModal.jam}
+                <div style={{ fontSize: '0.74rem', color: '#64748b' }}>
+                  {viewPhotoModal.internName} (@{viewPhotoModal.username}) • {viewPhotoModal.tanggal}
                 </div>
               </div>
               <button
@@ -933,8 +1083,8 @@ export function DashboardAdmin({ currentUser, onLogout }) {
             </div>
 
             <div style={{ fontSize: '0.78rem', color: '#64748b', display: 'flex', justifyContent: 'space-between' }}>
-              <span>Bagian: <strong>{viewPhotoModal.bagianMagang || '-'}</strong></span>
-              <span>Lokasi: <strong>{viewPhotoModal.jarak} dari Kantor PTPN IV</strong></span>
+              <span>Waktu: <strong>{viewPhotoModal.jam}</strong></span>
+              <span>Jarak: <strong>{viewPhotoModal.jarak} dari Kantor</strong></span>
             </div>
           </div>
         </div>
@@ -943,5 +1093,4 @@ export function DashboardAdmin({ currentUser, onLogout }) {
   );
 }
 
-export { DashboardAdmin as AdminDashboard };
 export default DashboardAdmin;

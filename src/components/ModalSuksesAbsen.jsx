@@ -107,7 +107,7 @@ export function ModalSuksesAbsen({ logData, internProfile, onClose }) {
               fontSize: '0.78rem',
               fontWeight: 800,
             }}>
-              ABSEN {logData.tipe.toUpperCase()}
+              ABSEN {(logData.tipe || 'MASUK').toUpperCase()}
             </div>
           </div>
 

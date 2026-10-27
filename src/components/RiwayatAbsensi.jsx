@@ -7,11 +7,12 @@ export function RiwayatAbsensi({ logs, onSelectPhoto }) {
 
   const filteredLogs = logs.filter(log => {
     if (filterType === 'Semua') return true;
-    return log.tipe.toLowerCase() === filterType.toLowerCase();
+    const t = (log.tipe || (log.status && log.status.toLowerCase().includes('pulang') ? 'pulang' : 'masuk')).toLowerCase();
+    return t === filterType.toLowerCase();
   });
 
-  const totalMasuk = logs.filter(l => l.tipe.toLowerCase() === 'masuk').length;
-  const totalPulang = logs.filter(l => l.tipe.toLowerCase() === 'pulang').length;
+  const totalMasuk = logs.filter(l => (l.tipe || '').toLowerCase() === 'masuk' || !(l.tipe || '').toLowerCase().includes('pulang')).length;
+  const totalPulang = logs.filter(l => (l.tipe || '').toLowerCase() === 'pulang').length;
 
   return (
     <div className="glass-panel" style={{ padding: '24px' }}>
